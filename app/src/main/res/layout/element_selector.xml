@@ -12,7 +12,7 @@
         android:layout_margin="12dp" />
 
     <TextView
-        android:id="@+id/titulo"
+        android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"

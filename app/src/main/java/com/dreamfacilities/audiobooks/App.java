@@ -8,13 +8,13 @@ import java.util.Vector;
  * Created by alex on 16/01/17.
  */
 
-public class Aplicacion extends Application {
-    private Vector<Libro> vectorLibros;
+public class App extends Application {
+    private Vector<Book> vectorLibros;
     private AdaptadorLibros adaptador;
 
     @Override
     public void onCreate() {
-        vectorLibros = Libro.ejemploLibros();
+        vectorLibros = Book.ejemploLibros();
         adaptador = new AdaptadorLibros(this, vectorLibros);
     }
 
@@ -23,7 +23,7 @@ public class Aplicacion extends Application {
         return adaptador;
     }
 
-    public Vector<Libro> getVectorLibros() {
+    public Vector<Book> getVectorLibros() {
         return vectorLibros;
     }
 }

@@ -20,10 +20,12 @@ import java.util.Vector;
 public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHolder> {
 
     private LayoutInflater inflador;
-    protected Vector<Libro> vectorLibros;
+    protected Vector<Book> vectorLibros;
     private Context contexto;
 
-    public AdaptadorLibros(Context contexto, Vector<Libro> vectorLibros) {
+    private View.OnClickListener onClickListener;
+
+    public AdaptadorLibros(Context contexto, Vector<Book> vectorLibros) {
         inflador = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.vectorLibros = vectorLibros;
         this.contexto = contexto;
@@ -31,14 +33,14 @@ public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHo
 
     //Creamos nuestro ViewHolder, con los tipos de elementos a modificar
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView portada;
-        public TextView titulo;
+        public ImageView cover;
+        public TextView title;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            portada = (ImageView) itemView.findViewById(R.id.portada);
-            portada.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            titulo = (TextView) itemView.findViewById(R.id.titulo);
+            cover = (ImageView) itemView.findViewById(R.id.cover);
+            cover.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            title = (TextView) itemView.findViewById(R.id.title);
         }
     }
 
@@ -47,16 +49,18 @@ public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHo
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         // Inflamos la vista desde el xml
-        View v = inflador.inflate(R.layout.element_selector, null);
+        View v = inflador.inflate(R.layout.fragment_detail, null);
+        v.setOnClickListener(onClickListener);
         return new ViewHolder(v);
     }
 
     // Usando como base el ViewHolder y lo personalizamos
     @Override
-    public void onBindViewHolder(ViewHolder holder, int posicion) {
-        Libro libro = vectorLibros.elementAt(posicion);
-        holder.portada.setImageResource(libro.recursoImagen);
-        holder.titulo.setText(libro.titulo);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        // Get content from the vector in the position
+        Book libro = vectorLibros.elementAt(position);
+        holder.cover.setImageResource(libro.imageResource);
+        holder.title.setText(libro.title);
     }
 
     // Indicamos el número de elementos de la lista
@@ -64,5 +68,10 @@ public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHo
     public int getItemCount() {
         return vectorLibros.size();
     }
+
+    public void setOnItemClickListener(View.OnClickListener onClickListener){
+        this.onClickListener = onClickListener;
+    }
+
 
 }
