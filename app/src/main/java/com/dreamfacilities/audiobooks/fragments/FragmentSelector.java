@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.dreamfacilities.audiobooks.AdaptadorLibros;
 import com.dreamfacilities.audiobooks.App;
 import com.dreamfacilities.audiobooks.Book;
+import com.dreamfacilities.audiobooks.MainActivity;
 import com.dreamfacilities.audiobooks.R;
 
 import java.util.Vector;
@@ -50,6 +51,7 @@ public class FragmentSelector extends Fragment {
         adapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((MainActivity) activity).showDetail(recyclerView.getChildAdapterPosition(v));
                 Toast.makeText(activity, "Element " + recyclerView.getChildAdapterPosition(v)
                         + " was selected", Toast.LENGTH_SHORT).show();
             }
