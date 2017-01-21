@@ -24,6 +24,7 @@ public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHo
     private Context contexto;
 
     private View.OnClickListener onClickListener;
+    private View.OnLongClickListener onLongClickListener;
 
     public AdaptadorLibros(Context contexto, Vector<Book> vectorLibros) {
         inflador = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -44,17 +45,21 @@ public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHo
         }
     }
 
-    // Creamos el ViewHolder con las vista de un elemento sin personalizar
+    // Create the ViewHolder with the default views
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        // Inflamos la vista desde el xml
+        // Inflate view via XML
         View v = inflador.inflate(R.layout.fragment_detail, null);
+
+        // Set Listeners for the views
         v.setOnClickListener(onClickListener);
+        v.setOnLongClickListener(onLongClickListener);
+
         return new ViewHolder(v);
     }
 
-    // Usando como base el ViewHolder y lo personalizamos
+    // Using the base viewholder set the different content views
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Get content from the vector in the position
@@ -63,7 +68,6 @@ public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHo
         holder.title.setText(libro.title);
     }
 
-    // Indicamos el número de elementos de la lista
     @Override
     public int getItemCount() {
         return vectorLibros.size();
@@ -71,6 +75,10 @@ public class AdaptadorLibros extends RecyclerView.Adapter<AdaptadorLibros.ViewHo
 
     public void setOnItemClickListener(View.OnClickListener onClickListener){
         this.onClickListener = onClickListener;
+    }
+
+    public void setOnItemLongClickListener(View.OnLongClickListener onLongClickListener){
+        this.onLongClickListener = onLongClickListener;
     }
 
 

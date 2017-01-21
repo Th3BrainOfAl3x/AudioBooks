@@ -76,6 +76,7 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
         mediaPlayer.start();
         mediaController.setMediaPlayer(this);
         mediaController.setAnchorView(getView().findViewById(R.id.fragment_detail));
+        mediaController.setPadding(0, 0, 0,110);
         mediaController.setEnabled(true);
         mediaController.show();
     }
