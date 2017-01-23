@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_all"
+            android:icon="@android:drawable/ic_menu_gallery"
+            android:title="All genre" />
+        <item android:id="@+id/nav_epic"
+            android:icon="@android:drawable/ic_menu_gallery"
+            android:title="Epic poem" />
+        <item android:id="@+id/nav_XIX"
+            android:icon="@android:drawable/ic_menu_gallery"
+            android:title="Literature X!X" />
+        <item android:id="@+id/nav_thriller"
+            android:icon="@android:drawable/ic_menu_gallery"
+            android:title="Thirller" />
+    </group>
+    <item android:title="Other actions">
+        <menu>
+            <item android:id="@+id/nav_preferences"
+                android:icon="@android:drawable/ic_menu_manage"
+                android:title="Preferences" />
+            <item android:id="@+id/nav_share"
+                android:icon="@android:drawable/ic_menu_share"
+                android:title="Share" />
+        </menu>
+    </item>
+</menu>

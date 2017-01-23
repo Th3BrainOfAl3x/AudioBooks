@@ -1,26 +1,34 @@
 package com.dreamfacilities.audiobooks.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
-import com.dreamfacilities.audiobooks.AdaptadorLibros;
 import com.dreamfacilities.audiobooks.App;
 import com.dreamfacilities.audiobooks.Book;
+import com.dreamfacilities.audiobooks.BooksFilterAdapter;
 import com.dreamfacilities.audiobooks.MainActivity;
 import com.dreamfacilities.audiobooks.R;
 
@@ -30,11 +38,11 @@ import java.util.Vector;
  * Created by alex on 20/01/17.
  */
 
-public class FragmentSelector extends Fragment {
+public class FragmentSelector extends Fragment implements Animation.AnimationListener, Animator.AnimatorListener {
 
     private Activity activity;
     private RecyclerView recyclerView;
-    private AdaptadorLibros adapter;
+    private BooksFilterAdapter adapter;
     private Vector<Book> vectorBooks;
 
     @Override
@@ -43,8 +51,8 @@ public class FragmentSelector extends Fragment {
         if (context instanceof Activity) {
             this.activity = (Activity) context;
             App app = (App) activity.getApplication();
-            adapter = app.getAdaptador();
-            vectorBooks = app.getVectorLibros();
+            adapter = app.getAdapter();
+            vectorBooks = app.getVectorBooks();
         }
     }
 
@@ -53,12 +61,18 @@ public class FragmentSelector extends Fragment {
 
         View view = inflator.inflate(R.layout.fragment_selector, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        animator.setAddDuration(1000);
+        animator.setMoveDuration(1000);
+
+        recyclerView.setItemAnimator(animator);
         recyclerView.setLayoutManager(new GridLayoutManager(activity, 2));
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) activity).showDetail(recyclerView.getChildAdapterPosition(v));
+                ((MainActivity) activity).showDetail((int) adapter.getItemId(recyclerView.getChildAdapterPosition(v)));
                 Toast.makeText(activity, "Element " + recyclerView.getChildAdapterPosition(v)
                         + " was selected", Toast.LENGTH_SHORT).show();
             }
@@ -86,7 +100,12 @@ public class FragmentSelector extends Fragment {
                         menu.setItems(options, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int opcion) {
                                         switch (opcion) {
-                                            case 0: //Compartir
+                                            case 0: //Share
+                                                Animator anim = AnimatorInflater.loadAnimator(activity,
+                                                        R.animator.menguar);
+                                                anim.addListener(FragmentSelector.this);
+                                                anim.setTarget(v);
+                                                anim.start();
                                                 Book book = vectorBooks.elementAt(id);
                                                 Intent i = new Intent(Intent.ACTION_SEND);
                                                 i.setType("text/plain");
@@ -99,22 +118,28 @@ public class FragmentSelector extends Fragment {
                                                         .setAction("Yes", new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View view) {
-                                                                vectorBooks.remove(id);
-                                                                adapter.notifyDataSetChanged();
+                                                                Animation anim = AnimationUtils.loadAnimation(activity, R.anim.menguar);
+                                                                anim.setAnimationListener(FragmentSelector.this);
+                                                                v.startAnimation(anim);
+
+                                                                adapter.remove(id);
+                                                                //adapter.notifyDataSetChanged();
                                                             }
                                                         }).show();
 
                                                 break;
                                             case 2: //Add
-                                                vectorBooks.add(vectorBooks.elementAt(id));
-                                                adapter.notifyDataSetChanged();
-
+                                                int position = recyclerView.getChildLayoutPosition(v);
+                                                adapter.add((Book) adapter.getItem(position));
+                                                //adapter.notifyDataSetChanged();
+                                                adapter.notifyItemInserted(0);
                                                 Snackbar.make(v,
                                                         "Book added",
                                                         Snackbar.LENGTH_INDEFINITE)
                                                         .setAction("Thanks!", new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View view) {
+
                                                             }
                                                         })
                                                         .show();
@@ -144,7 +169,45 @@ public class FragmentSelector extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_selector, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+        searchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextChange(String query) {
+                        adapter.setSearch(query);
+                        adapter.notifyDataSetChanged();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
+                });
+        MenuItemCompat.setOnActionExpandListener(searchItem,
+                new MenuItemCompat.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        adapter.setSearch("");
+                        adapter.notifyDataSetChanged();
+                        return true; // To closed
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return true;
+                    }
+                }
+        );
+        super.
+
+                onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -159,4 +222,44 @@ public class FragmentSelector extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        ((MainActivity) getActivity()).showElements(true);
+        super.onResume();
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+
+    }
+
+    @Override
+    public void onAnimationStart(Animator animator) {
+
+    }
+
+    @Override
+    public void onAnimationEnd(Animator animator) {
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAnimationCancel(Animator animator) {
+
+    }
+
+    @Override
+    public void onAnimationRepeat(Animator animator) {
+
+    }
 }

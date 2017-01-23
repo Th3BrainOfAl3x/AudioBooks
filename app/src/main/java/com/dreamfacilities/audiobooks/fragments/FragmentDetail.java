@@ -1,9 +1,11 @@
 package com.dreamfacilities.audiobooks.fragments;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,8 +15,10 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.dreamfacilities.audiobooks.App;
 import com.dreamfacilities.audiobooks.Book;
+import com.dreamfacilities.audiobooks.MainActivity;
 import com.dreamfacilities.audiobooks.R;
 
 import java.io.IOException;
@@ -43,14 +47,16 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
         return view;
     }
 
-    private void setInfoBook(int id, View vista) {
-        Book book = ((App) getActivity().getApplication())
-                .getVectorLibros().elementAt(id);
-        ((TextView) vista.findViewById(R.id.title)).setText(book.title);
-        ((TextView) vista.findViewById(R.id.autor)).setText(book.autor);
-        ((ImageView) vista.findViewById(R.id.cover))
-                .setImageResource(book.imageResource);
-        vista.setOnTouchListener(this);
+    private void setInfoBook(int id, View view) {
+        Book book = ((App) this.getActivity().getApplication()).getVectorBooks().elementAt(id);
+
+        ((TextView) view.findViewById(R.id.title)).setText(book.title);
+        ((TextView) view.findViewById(R.id.autor)).setText(book.autor);
+        App app = (App) getActivity().getApplication();
+        ((NetworkImageView) view.findViewById(R.id.cover)).setImageUrl( book.urlImage, app.getImageLoader());
+
+        view.setOnTouchListener(this);
+
         if (mediaPlayer != null) {
             mediaPlayer.release();
         }
@@ -72,11 +78,14 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        Log.d("Audiolibros", "Entramos en onPrepared de MediaPlayer");
-        mediaPlayer.start();
+        Log.d("AUDIOBOOKS", "OnPrepared from MediaPLayer");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if (preferences.getBoolean("pref_autoplay", true)) {
+            mediaPlayer.start();
+        }
         mediaController.setMediaPlayer(this);
         mediaController.setAnchorView(getView().findViewById(R.id.fragment_detail));
-        mediaController.setPadding(0, 0, 0,110);
+        mediaController.setPadding(0, 0, 0, 110);
         mediaController.setEnabled(true);
         mediaController.show();
     }
@@ -157,6 +166,16 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
     @Override
     public int getAudioSessionId() {
         return 0;
+    }
+
+    @Override
+    public void onResume() {
+        FragmentDetail fragmentDetail = (FragmentDetail) getFragmentManager().findFragmentById(R.id.fragment_detail);
+        if (fragmentDetail == null) {
+            MainActivity activity = (MainActivity) getActivity();
+            activity.showElements(false);
+        }
+        super.onResume();
     }
 }
   
