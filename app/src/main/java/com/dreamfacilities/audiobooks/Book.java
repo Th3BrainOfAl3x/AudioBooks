@@ -7,7 +7,7 @@ public class Book {
 
     public String title;
     public String autor;
-    //public int imageResource;
+    public int imageResource;
     public String urlImage;
     public String urlAudio;
     public String genre; // Género literario
@@ -20,10 +20,11 @@ public class Book {
     public final static String[] G_ARRAY = new String[]{G_TODOS, G_EPICO, G_S_XIX, G_SUSPENSE};
     public int colorVibrante = -1, colorApagado = -1;
 
-    public Book(String title, String autor, String urlImage,
+    public Book(String title, String autor, String urlImage, int imageResource,
                 String urlAudio, String genre, Boolean release, Boolean readed) {
         this.title = title;
         this.autor = autor;
+        this.imageResource =  imageResource;
         this.urlImage = urlImage;
         this.urlAudio = urlAudio;
         this.genre = genre;
@@ -35,26 +36,26 @@ public class Book {
         final String SERVER = "http://www.dcomg.upv.es/~jtomas/android/audiolibros/";
         Vector<Book> books = new Vector<Book>();
         books.add(new Book("Kappa", "Akutagawa",
-                SERVER+"kappa.jpg", SERVER + "kappa.mp3",
+                SERVER+"kappa.jpg", R.drawable.kappa, SERVER + "kappa.mp3",
                 Book.G_S_XIX, false, false));
         books.add(new Book("Avecilla", "Alas Clarín, Leopoldo",
-                SERVER + "avecilla.jpg", SERVER + "avecilla.mp3",
+                SERVER + "avecilla.jpg",R.drawable.avecilla, SERVER + "avecilla.mp3",
                 Book.G_S_XIX, true, false));
 
         books.add(new Book("Divina Comedia", "Dante",
-                SERVER + "divina_comedia.jpg", SERVER + "divina_comedia.mp3",
+                SERVER + "divina_comedia.jpg",R.drawable.divinacomedia, SERVER + "divina_comedia.mp3",
                 Book.G_EPICO, true, false));
         books.add(new Book("Viejo Pancho, El", "Alonso y Trelles, José",
-                SERVER + "viejo_pancho.jpg", SERVER + "viejo_pancho.mp3",
+                SERVER + "viejo_pancho.jpg",R.drawable.viejo_pancho, SERVER + "viejo_pancho.mp3",
                 Book.G_S_XIX, true, true));
         books.add(new Book("Canción de Rolando", "Anónimo",
-                SERVER + "cancion_rolando.jpg", SERVER + "cancion_rolando.mp3",
+                SERVER + "cancion_rolando.jpg",R.drawable.cancion_rolando, SERVER + "cancion_rolando.mp3",
                 Book.G_EPICO, false, true));
         books.add(new Book("Matrimonio de sabuesos", "Agata Christie",
-                SERVER + "matrim_sabuesos.jpg", SERVER + "matrim_sabuesos.mp3",
+                SERVER + "matrim_sabuesos.jpg",R.drawable.matrimonio_sabuesos, SERVER + "matrim_sabuesos.mp3",
                 Book.G_SUSPENSE, false, true));
         books.add(new Book("La iliada", "Homero",
-                SERVER + "la_iliada.jpg", SERVER + "la_iliada.mp3",
+                SERVER + "la_iliada.jpg",R.drawable.iliada, SERVER + "la_iliada.mp3",
                 Book.G_EPICO, true, false));
         return books;
     }

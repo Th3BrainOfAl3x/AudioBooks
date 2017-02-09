@@ -26,7 +26,7 @@ import com.dreamfacilities.audiobooks.fragments.FragmentSelector;
 import com.dreamfacilities.audiobooks.fragments.PreferencesFragment;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private BooksFilterAdapter adapter;
     private AppBarLayout appBarLayout;
@@ -124,27 +124,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        // v1
-
-        //App app = (App) getApplication();
-        //recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
-        //recyclerView.setAdapter(app.getAdaptador());
-
-        //layoutManager = new GridLayoutManager(this, 2);
-        //recyclerView.setLayoutManager(layoutManager);
-
-
-        //Listener for item in recycler view
-        //app.getAdaptador().setOnItemClickListener(new View.OnClickListener(){
-        //    @Override
-        //    public void onClick(View v){
-        //        Toast.makeText(MainActivity.this, "Element " +
-        //                                          recyclerView.getChildAdapterPosition(v) +
-        //                                          " was selected", Toast.LENGTH_SHORT).show();
-        //     }
-        //});
 
     }
 
@@ -265,7 +244,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             transaction.commit();
 
         }
-
         SharedPreferences pref = getSharedPreferences("com.dreamfacilities.audiobooks_internal", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt("last", id);
