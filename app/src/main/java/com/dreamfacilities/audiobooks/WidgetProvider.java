@@ -40,7 +40,7 @@ public class WidgetProvider extends AppWidgetProvider {
         Book book = null;
         int id = pref.getInt("last", -1);
         if (id >= 0) {
-            book = ((App) context.getApplicationContext()).getVectorBooks().elementAt(id);
+            book = BooksSingleton.getInstance(context).getBooks().elementAt(id);
         }
         return book;
     }

@@ -1,56 +1,39 @@
 package com.dreamfacilities.audiobooks;
 
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.support.v4.util.LruCache;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
-
-import java.util.Vector;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Created by alex on 16/01/17.
  */
 
 public class App extends Application {
-    private Vector<Book> vectorBooks;
-    private BooksFilterAdapter adapter;
-
-    private static RequestQueue requestQueue;
-    private static ImageLoader imageLoader;
+    private FirebaseAuth auth;
 
     @Override
     public void onCreate() {
-        vectorBooks = Book.ejemploLibros();
-        adapter = new BooksFilterAdapter(this, vectorBooks);
+        this.auth = FirebaseAuth.getInstance();
+    }
 
-        requestQueue = Volley.newRequestQueue(this);
-        imageLoader = new ImageLoader(requestQueue,
-                new ImageLoader.ImageCache() {
-                    private final LruCache<String, Bitmap> cache = new LruCache<String, Bitmap>(10);
-
-                    public void putBitmap(String url, Bitmap bitmap) { cache.put(url, bitmap); }
-
-                    public Bitmap getBitmap(String url) {  return cache.get(url);  }
-                });
+    public FirebaseAuth getAuth(){
+        return this.auth;
     }
 
 
-    public BooksFilterAdapter getAdapter() {
-        return adapter;
-    }
+    //public BooksFilterAdapter getAdapter() {
+      //  return adapter;
+    //}
 
-    public Vector<Book> getVectorBooks() {
-        return vectorBooks;
-    }
+    //public Vector<Book> getVectorBooks() {
+        //return vectorBooks;
+    //}
 
-    public static RequestQueue getRequestQueue() {
+    /*public static RequestQueue getRequestQueue() {
         return requestQueue;
-    }
+    }*/
 
-    public static ImageLoader getImageLoader() {
+    /*public static ImageLoader getImageLoader() {
         return imageLoader;
-    }
+    }*/
 }

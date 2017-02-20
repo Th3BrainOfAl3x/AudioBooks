@@ -8,7 +8,6 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="android.app.default_searchable"
@@ -20,10 +19,6 @@
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
@@ -32,6 +27,12 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity android:name=".PreferencesActivity"></activity>
+        <activity android:name=".LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <receiver android:name=".WidgetProvider">
             <intent-filter>
@@ -41,8 +42,10 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget" />
         </receiver>
-        <activity android:name=".ConfigureWidget"> <intent-filter>
-            <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/> </intent-filter>
+        <activity android:name=".ConfigureWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
         </activity>
     </application>
 

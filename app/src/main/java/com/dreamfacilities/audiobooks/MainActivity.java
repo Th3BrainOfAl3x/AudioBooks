@@ -1,9 +1,11 @@
 package com.dreamfacilities.audiobooks;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.app.FragmentTransaction;
@@ -19,14 +21,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dreamfacilities.audiobooks.fragments.FragmentDetail;
-import com.dreamfacilities.audiobooks.fragments.FragmentSelector;
+import com.dreamfacilities.audiobooks.fragments.SelectorFragment;
 import com.dreamfacilities.audiobooks.fragments.PreferencesFragment;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MainPresenter.View {
 
     private BooksFilterAdapter adapter;
     private AppBarLayout appBarLayout;
@@ -36,9 +42,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FloatingActionButton fab;
     private Toolbar toolbar;
 
-    // v1
-    //private RecyclerView recyclerView;
-    //private RecyclerView.LayoutManager layoutManager;
+    //private MainController controller;
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,20 +51,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         int idContainer = (findViewById(R.id.small_container) != null) ? R.id.small_container : R.id.left_container;
-        FragmentSelector firstFragment = new FragmentSelector();
+
+        SelectorFragment firstFragment = new SelectorFragment();
         getFragmentManager().beginTransaction().add(idContainer, firstFragment).commit();
 
+        adapter = BooksSingleton.getInstance(this.getApplicationContext()).getAdapter();
 
-        adapter = ((App) getApplicationContext()).getAdapter();
+        presenter = new MainPresenter(new BooksRespository(BookSharedPrefenceStorage.getInstance(this)), this);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goToLastListen();
+                presenter.clickFavoriteButton();
             }
         });
-
 
         appBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout);
         //Tabs
@@ -125,6 +132,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //controller = new MainController(BookSharedPrefenceStorage.getInstance(this));
+
+        // Username
+        SharedPreferences pref = getSharedPreferences("com.dreamfacilities.audiobooks_internal", MODE_PRIVATE);
+        String name = pref.getString("name", null);
+        View headerLayout = navigationView.getHeaderView(0);
+        TextView txtName = (TextView) headerLayout.findViewById(R.id.txtName);
+        txtName.setText(String.format(getString(R.string.welcome_message), name));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -143,6 +158,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_thriller) {
             adapter.setGenre(Book.G_SUSPENSE);
             adapter.notifyDataSetChanged();
+        } else if (id == R.id.nav_signout) {
+            AuthUI.getInstance().signOut(this)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            SharedPreferences pref = getSharedPreferences(
+                                    "com.example.audiolibros_internal", MODE_PRIVATE);
+                            pref.edit().remove("provider").commit();
+                            pref.edit().remove("email").commit();
+                            pref.edit().remove("name").commit();
+                            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                    | Intent.FLAG_ACTIVITY_NEW_TASK
+                                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                            finish();
+                        }
+                    });
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(
                 R.id.drawer_layout);
@@ -175,15 +208,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //    return true;
-        //}
 
         if (id == R.id.menu_preferences) {
 
-            /*Intent i = new Intent(this, PreferencesActivity.class);
-            startActivity(i);*/
             openPreferences();
             Toast.makeText(this, "Preferences", Toast.LENGTH_LONG).show();
 
@@ -222,6 +249,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void showDetail(int id) {
+        presenter.openDetail(id);
+    }
+
+    @Override
+    public void showNotLastView() {
+        Toast.makeText(this, "Sin última vista", Toast.LENGTH_LONG).show();
+    }
+
+    public void goToLastListen() {
+        presenter.clickFavoriteButton();
+    }
+
+    public void showElements(boolean show) {
+        appBarLayout.setExpanded(show);
+        toggle.setDrawerIndicatorEnabled(show);
+
+        if (show) {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            tabs.setVisibility(View.VISIBLE);
+        } else {
+            tabs.setVisibility(View.GONE);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+    }
+
+    private void showFragmentDetail(int id) {
         FragmentDetail fragmentDetail = (FragmentDetail) getFragmentManager()
                 .findFragmentById(R.id.fragment_detail);
 
@@ -243,34 +296,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             transaction.addToBackStack(null);
             transaction.commit();
 
-        }
-        SharedPreferences pref = getSharedPreferences("com.dreamfacilities.audiobooks_internal", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putInt("last", id);
-        editor.commit();
-    }
-
-    public void goToLastListen() {
-        SharedPreferences pref = getSharedPreferences(
-                "com.dreamfacilities.audiobooks_internal", MODE_PRIVATE);
-        int id = pref.getInt("last", -1);
-        if (id >= 0) {
-            showDetail(id);
-        } else {
-            Toast.makeText(this, "Without last listened", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public void showElements(boolean show) {
-        appBarLayout.setExpanded(show);
-        toggle.setDrawerIndicatorEnabled(show);
-
-        if (show) {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            tabs.setVisibility(View.VISIBLE);
-        } else {
-            tabs.setVisibility(View.GONE);
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
     }
 }

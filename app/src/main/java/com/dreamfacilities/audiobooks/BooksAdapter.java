@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.dreamfacilities.audiobooks.interfaces.ClickAction;
 
 import java.util.Vector;
 
@@ -34,6 +35,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
 
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
+    private ClickAction clickAction = new EmptyClickAction();
 
     public BooksAdapter(Context context, Vector<Book> vectorLibros) {
         inflador = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -62,7 +64,6 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
         View v = inflador.inflate(R.layout.element_selector, null);
 
         // Set Listeners for the views
-        v.setOnClickListener(onClickListener);
         v.setOnLongClickListener(onLongClickListener);
 
         return new ViewHolder(v);
@@ -70,12 +71,12 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
 
     // Using the base viewholder set the different content views
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         // Get content from the vector in the position
         Book book = vectorBooks.elementAt(position);
 
         App app = (App) context.getApplicationContext();
-        app.getImageLoader().get(book.urlImage,
+        VolleySingleton.getInstance(context).getImageLoader().get(book.urlImage,
                 new ImageLoader.ImageListener() {
                     @Override
                     public void onResponse(ImageLoader.ImageContainer response,
@@ -102,6 +103,13 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
         );
 
         holder.title.setText(book.title);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickAction.execute(position);
+            }
+        });
     }
 
     @Override
@@ -117,4 +125,8 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.ViewHolder> 
         this.onLongClickListener = onLongClickListener;
     }
 
+
+    public void setClickAction(ClickAction clickAction) {
+        this.clickAction = clickAction;
+    }
 }

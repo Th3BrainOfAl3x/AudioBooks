@@ -2,13 +2,15 @@ package com.dreamfacilities.audiobooks;
 
 import android.content.Context;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 
 /**
  * Created by alex on 21/01/17.
  */
 
-public class BooksFilterAdapter extends BooksAdapter {
+public class BooksFilterAdapter extends BooksAdapter implements Observer {
     private Vector<Book> booksNoFiltered;   // Vector con todos los libros
     private Vector<Integer> indexFilter;   // Índice en booksNoFiltered de
     private String search = "";           // Búsqueda sobre autor o título
@@ -77,5 +79,11 @@ public class BooksFilterAdapter extends BooksAdapter {
     public void add(Book book) {
         booksNoFiltered.add(0,book);
         refreshFilter();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        setSearch((String) arg);
+        notifyDataSetChanged();
     }
 }

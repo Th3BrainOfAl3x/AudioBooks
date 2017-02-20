@@ -3,4 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="drawer_open">Drawer opened</string>
     <string name="drawer_close">Drawer closed</string>
+    <string name="welcome_message">Welcome, %s</string>
+    <string name="sign_out">Sign out</string>
+    <string name="facebook_application_id" translatable="false">709704632530972</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb709704632530972</string>
 </resources>

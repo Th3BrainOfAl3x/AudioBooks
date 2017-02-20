@@ -25,8 +25,10 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.dreamfacilities.audiobooks.App;
 import com.dreamfacilities.audiobooks.Book;
+import com.dreamfacilities.audiobooks.BooksSingleton;
 import com.dreamfacilities.audiobooks.MainActivity;
 import com.dreamfacilities.audiobooks.R;
+import com.dreamfacilities.audiobooks.VolleySingleton;
 import com.dreamfacilities.audiobooks.ZoomSeekBar;
 import com.dreamfacilities.audiobooks.interfaces.ValorListener;
 
@@ -67,7 +69,7 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
 
     private void setInfoBook(int id, View view) {
 
-        Book book = ((App) this.getActivity().getApplication()).getVectorBooks().elementAt(id);
+        Book book = BooksSingleton.getInstance(this.getActivity().getApplication().getApplicationContext()).getBooks().elementAt(id);
 
         ((TextView) view.findViewById(R.id.title)).setText(book.title);
         ((TextView) view.findViewById(R.id.autor)).setText(book.autor);
@@ -76,7 +78,7 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
         zoomSeekBar.setOnValorListener(this);
 
         App app = (App) getActivity().getApplication();
-        ((NetworkImageView) view.findViewById(R.id.cover)).setImageUrl(book.urlImage, app.getImageLoader());
+        ((NetworkImageView) view.findViewById(R.id.cover)).setImageUrl(book.urlImage, VolleySingleton.getInstance(getContext()).getImageLoader());
 
         view.setOnTouchListener(this);
 
@@ -107,15 +109,15 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
         remoteViews.setTextViewText(R.id.notification_autor, book.autor);
         remoteViews.setTextColor(R.id.notification_autor, Color.BLACK);
         Intent intent = new Intent(getActivity(), MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notificacion = (NotificationCompat.Builder) new NotificationCompat.Builder(getActivity())
-                                                                            .setContent(remoteViews)
-                                                                            .setPriority(Notification.PRIORITY_MAX)
-                                                                            .setSmallIcon(R.mipmap.ic_launcher)
-                                                                            .setContentTitle("AudioBook Playing")
-                                                                            .setContentIntent(pendingIntent);
-        notificManager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                .setContent(remoteViews)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("AudioBook Playing")
+                .setContentIntent(pendingIntent);
+        notificManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         notificManager.notify(ID_NOTIFICACION, notificacion.build());
 
     }

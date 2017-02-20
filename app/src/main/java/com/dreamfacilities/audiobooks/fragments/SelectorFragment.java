@@ -28,9 +28,13 @@ import android.widget.Toast;
 
 import com.dreamfacilities.audiobooks.App;
 import com.dreamfacilities.audiobooks.Book;
+import com.dreamfacilities.audiobooks.BooksAdapter;
 import com.dreamfacilities.audiobooks.BooksFilterAdapter;
+import com.dreamfacilities.audiobooks.BooksSingleton;
 import com.dreamfacilities.audiobooks.MainActivity;
+import com.dreamfacilities.audiobooks.OpenDetailClickAction;
 import com.dreamfacilities.audiobooks.R;
+import com.dreamfacilities.audiobooks.SearchObservable;
 
 import java.util.Vector;
 
@@ -38,10 +42,11 @@ import java.util.Vector;
  * Created by alex on 20/01/17.
  */
 
-public class FragmentSelector extends Fragment implements Animation.AnimationListener, Animator.AnimatorListener {
+public class SelectorFragment extends Fragment implements Animation.AnimationListener, Animator.AnimatorListener {
 
     private Activity activity;
     private RecyclerView recyclerView;
+
     private BooksFilterAdapter adapter;
     private Vector<Book> vectorBooks;
 
@@ -51,8 +56,8 @@ public class FragmentSelector extends Fragment implements Animation.AnimationLis
         if (context instanceof Activity) {
             this.activity = (Activity) context;
             App app = (App) activity.getApplication();
-            adapter = app.getAdapter();
-            vectorBooks = app.getVectorBooks();
+            adapter = BooksSingleton.getInstance(context).getAdapter();
+            vectorBooks = BooksSingleton.getInstance(context).getBooks();
         }
     }
 
@@ -69,14 +74,7 @@ public class FragmentSelector extends Fragment implements Animation.AnimationLis
         recyclerView.setItemAnimator(animator);
         recyclerView.setLayoutManager(new GridLayoutManager(activity, 2));
         recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) activity).showDetail((int) adapter.getItemId(recyclerView.getChildAdapterPosition(v)));
-                Toast.makeText(activity, "Element " + recyclerView.getChildAdapterPosition(v)
-                        + " was selected", Toast.LENGTH_SHORT).show();
-            }
-        });
+        adapter.setClickAction(new OpenDetailClickAction((MainActivity) getActivity()));
 
 
         adapter.setOnItemLongClickListener(
@@ -103,7 +101,7 @@ public class FragmentSelector extends Fragment implements Animation.AnimationLis
                                             case 0: //Share
                                                 Animator anim = AnimatorInflater.loadAnimator(activity,
                                                         R.animator.menguar);
-                                                anim.addListener(FragmentSelector.this);
+                                                anim.addListener(SelectorFragment.this);
                                                 anim.setTarget(v);
                                                 anim.start();
                                                 Book book = vectorBooks.elementAt(id);
@@ -119,7 +117,7 @@ public class FragmentSelector extends Fragment implements Animation.AnimationLis
                                                             @Override
                                                             public void onClick(View view) {
                                                                 Animation anim = AnimationUtils.loadAnimation(activity, R.anim.menguar);
-                                                                anim.setAnimationListener(FragmentSelector.this);
+                                                                anim.setAnimationListener(SelectorFragment.this);
                                                                 v.startAnimation(anim);
 
                                                                 adapter.remove(id);
@@ -149,9 +147,7 @@ public class FragmentSelector extends Fragment implements Animation.AnimationLis
                                 }
 
                         );
-                        menu.create().
-
-                                show();
+                        menu.create().show();
 
                         return true;
                     }
@@ -176,20 +172,10 @@ public class FragmentSelector extends Fragment implements Animation.AnimationLis
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 
-        searchView.setOnQueryTextListener(
-                new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextChange(String query) {
-                        adapter.setSearch(query);
-                        adapter.notifyDataSetChanged();
-                        return false;
-                    }
+        SearchObservable searchObservable = new SearchObservable();
+        searchObservable.addObserver(adapter);
+        searchView.setOnQueryTextListener(searchObservable);
 
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return false;
-                    }
-                });
         MenuItemCompat.setOnActionExpandListener(searchItem,
                 new MenuItemCompat.OnActionExpandListener() {
                     @Override
@@ -205,9 +191,7 @@ public class FragmentSelector extends Fragment implements Animation.AnimationLis
                     }
                 }
         );
-        super.
-
-                onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
