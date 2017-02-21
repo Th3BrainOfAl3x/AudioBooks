@@ -7,11 +7,12 @@ package com.dreamfacilities.audiobooks;
 public class BooksRespository {
     private final BookStorage bookStorage;
 
+
     public BooksRespository(BookStorage bookStorage) { this.bookStorage = bookStorage; }
 
-    public int getLastBook() { return bookStorage.getLastBook(); }
+    public String getLastBook() { return bookStorage.getLastBook(); }
 
     public boolean hasLastBook() { return bookStorage.hasLastBook(); }
 
-    public void saveLastBook(int id) { bookStorage.saveLastBook(id); }
+    public void saveLastBook(String key) { bookStorage.saveLastBook(key); }
 }

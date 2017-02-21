@@ -11,11 +11,11 @@ public class MainController {
         this.bookStorage = libroStorage;
     }
 
-    public void saveLastBook(int id) {
-        bookStorage.saveLastBook(id);
+    public void saveLastBook(String key) {
+        bookStorage.saveLastBook(key);
     }
 
-    public int getLastBook(){
+    public String getLastBook(){
         return bookStorage.getLastBook();
     }
 

@@ -24,13 +24,14 @@ public class MainPresenter {
         }
     }
 
-    public void openDetail(int id) {
-        this.booksRespository.saveLastBook(id);
-        view.showDetail(id);
+    public void openDetail(String key) {
+        this.booksRespository.saveLastBook(key);
+        view.showFragmentDetail(key);
     }
 
     public interface View {
-        void showDetail(int lastBook);
+        void showDetail(String lastBook);
+        void showFragmentDetail(String key);
 
         void showNotLastView();
     }

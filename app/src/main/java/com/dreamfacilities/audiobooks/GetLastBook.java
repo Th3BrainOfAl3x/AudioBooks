@@ -10,7 +10,7 @@ public class GetLastBook {
     public GetLastBook(BooksRespository booksRespository) {
         this.booksRespository = booksRespository;
     }
-    public int execute() {
+    public String execute() {
         return  booksRespository.getLastBook();
     }
 }

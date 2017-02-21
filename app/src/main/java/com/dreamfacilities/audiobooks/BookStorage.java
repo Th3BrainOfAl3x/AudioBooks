@@ -6,6 +6,6 @@ package com.dreamfacilities.audiobooks;
 
 public interface BookStorage {
     boolean hasLastBook();
-    int getLastBook();
-    void saveLastBook(int id);
+    String getLastBook();
+    void saveLastBook(String key);
 }

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
  */
 
 public class BookSharedPrefenceStorage implements BookStorage {
+
     public static final String PREF_AUDIOBOOKS = "com.dreamfacilities.audiobooks_internal";
     public static final String KEY_LAST_BOOK = "last";
     private final Context context;
@@ -31,15 +32,15 @@ public class BookSharedPrefenceStorage implements BookStorage {
 
 
     @Override
-    public int getLastBook() {
-        return getPreference().getInt(KEY_LAST_BOOK, -1);
+    public String getLastBook() {
+        return getPreference().getString(KEY_LAST_BOOK, "last");
     }
 
     @Override
-    public void saveLastBook(int id) {
+    public void saveLastBook(String key) {
         SharedPreferences pref = context.getSharedPreferences(PREF_AUDIOBOOKS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putInt("last", id);
+        editor.putString("last", key);
         editor.commit();
     }
 

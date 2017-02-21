@@ -48,7 +48,6 @@ public class SelectorFragment extends Fragment implements Animation.AnimationLis
     private RecyclerView recyclerView;
 
     private BooksFilterAdapter adapter;
-    private Vector<Book> vectorBooks;
 
     @Override
     public void onAttach(Context context) {
@@ -57,7 +56,6 @@ public class SelectorFragment extends Fragment implements Animation.AnimationLis
             this.activity = (Activity) context;
             App app = (App) activity.getApplication();
             adapter = BooksSingleton.getInstance(context).getAdapter();
-            vectorBooks = BooksSingleton.getInstance(context).getBooks();
         }
     }
 
@@ -104,7 +102,7 @@ public class SelectorFragment extends Fragment implements Animation.AnimationLis
                                                 anim.addListener(SelectorFragment.this);
                                                 anim.setTarget(v);
                                                 anim.start();
-                                                Book book = vectorBooks.elementAt(id);
+                                                Book book = adapter.getItemById(id);
                                                 Intent i = new Intent(Intent.ACTION_SEND);
                                                 i.setType("text/plain");
                                                 i.putExtra(Intent.EXTRA_SUBJECT, book.title);
@@ -130,7 +128,7 @@ public class SelectorFragment extends Fragment implements Animation.AnimationLis
                                                 int position = recyclerView.getChildLayoutPosition(v);
                                                 adapter.add((Book) adapter.getItem(position));
                                                 //adapter.notifyDataSetChanged();
-                                                adapter.notifyItemInserted(0);
+                                                adapter.notifyItemInserted(adapter.getItemCount()+1);
                                                 Snackbar.make(v,
                                                         "Book added",
                                                         Snackbar.LENGTH_INDEFINITE)
@@ -209,9 +207,14 @@ public class SelectorFragment extends Fragment implements Animation.AnimationLis
     @Override
     public void onResume() {
         ((MainActivity) getActivity()).showElements(true);
+        adapter.activateBooksListener();
         super.onResume();
     }
 
+    @Override public void onPause() {
+        super.onPause();
+        adapter.desactivateBooksListener();
+    }
     @Override
     public void onAnimationStart(Animation animation) {
 

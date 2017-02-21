@@ -59,17 +59,17 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
         View view = inflador.inflate(R.layout.fragment_detail, contenedor, false);
         Bundle args = getArguments();
         if (args != null) {
-            int position = args.getInt(ARG_ID_BOOK);
+            String position = args.getString(ARG_ID_BOOK);
             setInfoBook(position, view);
         } else {
-            setInfoBook(0, view);
+            setInfoBook("", view);
         }
         return view;
     }
 
-    private void setInfoBook(int id, View view) {
+    private void setInfoBook(String key, View view) {
 
-        Book book = BooksSingleton.getInstance(this.getActivity().getApplication().getApplicationContext()).getBooks().elementAt(id);
+        Book book = BooksSingleton.getInstance(this.getActivity().getApplication().getApplicationContext()).getAdapter().getItemByKey(key);
 
         ((TextView) view.findViewById(R.id.title)).setText(book.title);
         ((TextView) view.findViewById(R.id.autor)).setText(book.autor);
@@ -122,8 +122,8 @@ public class FragmentDetail extends Fragment implements View.OnTouchListener,
 
     }
 
-    public void setInfoBook(int id) {
-        setInfoBook(id, getView());
+    public void setInfoBook(String key) {
+        setInfoBook(key, getView());
     }
 
     @Override

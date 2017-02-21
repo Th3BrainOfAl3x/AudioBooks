@@ -7,4 +7,15 @@
     <string name="sign_out">Sign out</string>
     <string name="facebook_application_id" translatable="false">709704632530972</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb709704632530972</string>
+    <string name="twitter_consumer_key" translatable="false">gz584hmgqSzryO8qTu6AKFuw4</string>
+    <string name="twitter_consumer_secret" translatable="false">P4eoxIUK8fcHwCTmG5BmOGS6QobFz13Lj1HtBiAKK1ofpvVhvJ</string>
+    <string name="login_msg_email">Email</string>
+    <string name="login_msg_password">Password</string>
+    <string name="login_msg_signin">Sign in</string>
+    <string name="login_msg_signup">Sign up</string>
+    <string name="error_connection_failed">Error, conexion failed </string>
+    <string name="error_google">Error at Sign in with Google</string>
+    <string name="error_empty">Please fill all the inputs</string>
+    <string name="error_cancelled">Error, Sign in canceled</string>
+    <string name="show_login_form">Switch Login</string>
 </resources>

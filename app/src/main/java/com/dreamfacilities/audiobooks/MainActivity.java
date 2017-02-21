@@ -1,9 +1,9 @@
 package com.dreamfacilities.audiobooks;
 
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -24,12 +24,15 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.dreamfacilities.audiobooks.fragments.FragmentDetail;
 import com.dreamfacilities.audiobooks.fragments.SelectorFragment;
 import com.dreamfacilities.audiobooks.fragments.PreferencesFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MainPresenter.View {
@@ -140,6 +143,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View headerLayout = navigationView.getHeaderView(0);
         TextView txtName = (TextView) headerLayout.findViewById(R.id.txtName);
         txtName.setText(String.format(getString(R.string.welcome_message), name));
+        // User picture
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Uri imageUrl = user.getPhotoUrl();
+        if (imageUrl != null) {
+            NetworkImageView userPicture = (NetworkImageView) headerLayout.findViewById(R.id.imageView);
+            App app = (App) getApplicationContext();
+            userPicture.setImageUrl(imageUrl.toString(), VolleySingleton.getInstance(this).getImageLoader());
+        }
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -164,11 +176,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             SharedPreferences pref = getSharedPreferences(
-                                    "com.example.audiolibros_internal", MODE_PRIVATE);
+                                    "com.dreamfacilities.audiobooks_internal", MODE_PRIVATE);
                             pref.edit().remove("provider").commit();
                             pref.edit().remove("email").commit();
                             pref.edit().remove("name").commit();
-                            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                            Intent i = new Intent(MainActivity.this, CustomLoginActivity.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                                     | Intent.FLAG_ACTIVITY_NEW_TASK
                                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -248,8 +260,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void showDetail(int id) {
-        presenter.openDetail(id);
+    public void showDetail(String key) {
+        presenter.openDetail(key);
     }
 
     @Override
@@ -274,19 +286,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void showFragmentDetail(int id) {
+    public void showFragmentDetail(String key) {
         FragmentDetail fragmentDetail = (FragmentDetail) getFragmentManager()
                 .findFragmentById(R.id.fragment_detail);
 
         if (fragmentDetail != null) {
 
-            fragmentDetail.setInfoBook(id);
+            fragmentDetail.setInfoBook(key);
 
         } else {
 
             FragmentDetail newFragmentDetail = new FragmentDetail();
             Bundle args = new Bundle();
-            args.putInt(FragmentDetail.ARG_ID_BOOK, id);
+            args.putString(FragmentDetail.ARG_ID_BOOK, key);
             newFragmentDetail.setArguments(args);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 

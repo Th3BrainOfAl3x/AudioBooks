@@ -5,6 +5,6 @@ package com.dreamfacilities.audiobooks.interfaces;
  */
 
 public interface ClickAction {
-    void execute(int position);
+    void execute(String position);
 }
 

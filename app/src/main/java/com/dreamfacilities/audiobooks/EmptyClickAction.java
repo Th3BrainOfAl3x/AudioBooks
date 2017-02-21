@@ -8,6 +8,6 @@ import com.dreamfacilities.audiobooks.interfaces.ClickAction;
 
 public class EmptyClickAction implements ClickAction {
     @Override
-    public void execute(int position) {
+    public void execute(String position) {
     }
 }
