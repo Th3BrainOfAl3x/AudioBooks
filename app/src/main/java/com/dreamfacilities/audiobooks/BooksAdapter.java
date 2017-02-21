@@ -35,7 +35,7 @@ import java.util.Vector;
  */
 
 public class BooksAdapter
-        extends RecyclerView.Adapter<BooksFilterAdapter.ViewHolder> implements ChildEventListener {
+        extends RecyclerView.Adapter<BooksAdapter.ViewHolder> implements ChildEventListener {
 
     private LayoutInflater inflador;
     protected Vector<Book> vectorBooks;

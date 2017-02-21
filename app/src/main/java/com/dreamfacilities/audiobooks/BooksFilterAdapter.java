@@ -25,6 +25,7 @@ public class BooksFilterAdapter extends BooksAdapter implements Observer {
 
     public BooksFilterAdapter(Context contexto, DatabaseReference reference) {
         super(contexto, reference);
+
         refreshFilter();
     }
 
